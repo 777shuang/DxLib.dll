@@ -2,6 +2,7 @@
 MSYS2上で、DXライブラリのDLLを作成するためのスクリプトです。以下のパッケージをインストールする必要があります。
 - `make`
 - `wget`
+- `git`
 - `mingw-w64-x86_64-7zip`
 - `mingw-w64-x86_64-gcc`
 - `mingw-w64-x86_64-bullet`
@@ -20,3 +21,5 @@ MSYS2上で、DXライブラリのDLLを作成するためのスクリプトで�
 `$ cd DxLib.dll`
 `$ make init`
 `$ make`
+
+## 独自部分のみMIT Licenseが適用されます。test.cppはDXライブラリのサイトから拾ってきたものなので適用されません。
