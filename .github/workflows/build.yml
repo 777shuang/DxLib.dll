@@ -9,10 +9,16 @@ on:
 permissions:
   contents: read
 
-jobs:
-  build:
-    runs-on: msys2 {0}
 
+jobs:
+      
+  build:
+    runs-on: windows-latest
+
+    defaults:
+      run:
+        shell: msys2 {0}
+        
     steps:
     - name: MSYS2 Setup
       uses: msys2/setup-msys2@v2
