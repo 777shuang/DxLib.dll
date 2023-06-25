@@ -109,21 +109,19 @@ DxLibMake/DxMemImgDrawFunction3.o \
 	$(CXX) $(LDFLAGS) $^ -o $@
 
 *.dll:
-cp \
-$(BIN)/libBulletCollision.dll \
-$(BIN)/libBulletDynamics.dll \
-$(BIN)/libjpeg*.dll \
-$(BIN)/libLinearMath.dll \
-$(BIN)/libogg*.dll \
-$(BIN)/libopus*.dll \
-$(BIN)/libopusfile*.dll \
-$(BIN)/libpng*.dll \
-$(BIN)/libtheora*.dll \
-$(BIN)/libtiff*.dll \
-$(BIN)/libvorbis*.dll \
-$(BIN)/libvorbisfile*.dll \
-$(BIN)/zlib*.dll \
- .
+	cp $(BIN)/libBulletCollision.dll .
+	cp $(BIN)/libBulletDynamics.dll .
+	cp $(BIN)/libjpeg*.dll .
+	cp $(BIN)/libLinearMath.dll .
+	cp $(BIN)/libogg*.dll .
+	cp $(BIN)/libopus*.dll .
+	cp $(BIN)/libopusfile*.dll .
+	cp $(BIN)/libpng*.dll .
+	cp $(BIN)/libtheora*.dll .
+	cp $(BIN)/libtiff*.dll .
+	cp $(BIN)/libvorbis*.dll .
+	cp $(BIN)/libvorbisfile*.dll .
+	cp $(BIN)/zlib*.dll .
 
 DxLibMake/DxArchive_.o: DxLibMake/DxArchive_.cpp
 	$(CXX) $(CXXFLAGS) $< -o $@
