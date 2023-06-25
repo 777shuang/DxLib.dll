@@ -103,7 +103,7 @@ DxLibMake/DxMemImgDrawFunction1.o \
 DxLibMake/DxMemImgDrawFunction2.o \
 DxLibMake/DxMemImgDrawFunction3.o \
 \
-./*.dll
+/mingw64/bin/*.dll
 	$(CXX) $(LDFLAGS) $^ -o $@
 
 DxLibMake/DxArchive_.o: DxLibMake/DxArchive_.cpp
