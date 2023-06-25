@@ -26,6 +26,7 @@ jobs:
         msystem: MINGW64
         update: true
         install: >-
+          make
           wget
           mingw-w64-x86_64-bullet
           mingw-w64-x86_64-libpng
