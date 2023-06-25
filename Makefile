@@ -319,6 +319,7 @@ init: DxLibMake
 .PHONY: DxLibMake
 DxLibMake: DxLibMake.zip
 	$(UNZIP) $<
+	patch < DxBaseImageWin.cpp.patch
 DxLibMake.zip:
 	wget -O $@ https://dxlib.xsrv.jp/DxLib/DxLibMake$(DXLIB_VERSION).zip 
 
