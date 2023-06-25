@@ -4,6 +4,7 @@ UNZIP=unzip
 CXXFLAGS= -s -Ofast -c -DDX_GCC_COMPILE -DDX_COMPILE_TYPE_C_LANGUAGE
 LDFLAGS= -s -Ofast -shared
 DXLIB_VERSION=3_24b
+DXLIB_URL=https://dxlib.xsrv.jp/DxLib/DxLibMake$(DXLIB_VERSION).zip
 BIN=/mingw64/bin
 
 DxLib-$(DXLIB_VERSION).dll: \
@@ -321,7 +322,7 @@ DxLibMake: DxLibMake.zip
 	$(UNZIP) $<
 	patch < DxBaseImageWin.cpp.patch
 DxLibMake.zip:
-	wget -O $@ https://dxlib.xsrv.jp/DxLib/DxLibMake$(DXLIB_VERSION).zip 
+	wget -O $@  
 
 .PHONY: clean
 clean:
