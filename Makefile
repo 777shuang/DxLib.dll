@@ -124,7 +124,7 @@ libvorbis*.dll \
 libvorbisfile*.dll \
 libwebp*.dll \
 libzstd.dll \
-zlib*.dll \
+zlib*.dll
 	$(CXX) $(LDFLAGS) $^ -o $@
 
 libBulletCollision.dll: $(BIN)/libBulletCollision.dll
