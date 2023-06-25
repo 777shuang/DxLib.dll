@@ -27,9 +27,8 @@ jobs:
         update: true
         install: >-
           make
-          patch
-          unzip
           wget
+          mingw-w64-x86_64-7zip
           mingw-w64-x86_64-gcc
           mingw-w64-x86_64-bullet
           mingw-w64-x86_64-libpng
@@ -48,7 +47,7 @@ jobs:
     - name: Add MSBuild to PATH
       uses: microsoft/setup-msbuild@v1.0.2
       with:
-        submodule: recursive
+        submodules: recursive
 
     - name: Build
       working-directory: ${{env.GITHUB_WORKSPACE}}
