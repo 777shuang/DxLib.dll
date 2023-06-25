@@ -322,7 +322,7 @@ DxLibMake: DxLibMake.zip
 	$(UNZIP) $<
 	patch < DxBaseImageWin.cpp.patch
 DxLibMake.zip:
-	wget -O $@  
+	wget -O $@ $(DXLIB_URL)
 
 .PHONY: clean
 clean:
