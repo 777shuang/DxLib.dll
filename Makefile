@@ -4,6 +4,7 @@ UNZIP=unzip
 CXXFLAGS= -s -Ofast -c -DDX_GCC_COMPILE -DDX_COMPILE_TYPE_C_LANGUAGE
 LDFLAGS= -s -Ofast -shared
 DXLIB_VERSION=3_24b
+BIN=/mingw64/bin
 
 DxLib-$(DXLIB_VERSION).dll: \
 DxLibMake/DxArchive_.o \
@@ -103,7 +104,20 @@ DxLibMake/DxMemImgDrawFunction1.o \
 DxLibMake/DxMemImgDrawFunction2.o \
 DxLibMake/DxMemImgDrawFunction3.o \
 \
-/mingw64/bin/*.dll
+$(BIN)/libBulletCollision.dll \
+$(BIN)/libBulletDynamics.dll \
+$(BIN)/libjpeg*.dll \
+$(BIN)/libLinearMath.dll \
+$(BIN)/libogg*.dll \
+$(BIN)/libopus*.dll \
+$(BIN)/libopusfile*.dll \
+$(BIN)/libpng*.dll \
+$(BIN)/libtheora*.dll \
+$(BIN)/libtiff*.dll \
+$(BIN)/libvorbis*.dll \
+$(BIN)/libvorbisfile*.dll \
+$(BIN)/zlib*.dll
+
 	$(CXX) $(LDFLAGS) $^ -o $@
 
 DxLibMake/DxArchive_.o: DxLibMake/DxArchive_.cpp
