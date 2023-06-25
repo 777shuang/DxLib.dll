@@ -1,0 +1,65 @@
+name: Build
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: msys2 {0}
+
+    steps:
+    - name: MSYS2 Setup
+      uses: msys2/setup-msys2@v2
+      with:
+        msystem: MINGW64
+        update: true
+        install: >-
+          wget
+          mingw-w64-x86_64-bullet
+          mingw-w64-x86_64-libpng
+          mingw-w64-x86_64-zlib
+          mingw-w64-x86_64-libjpeg-turbo
+          mingw-w64-x86_64-libtiff
+          mingw-w64-x86_64-libogg
+          mingw-w64-x86_64-libvorbis
+          mingw-w64-x86_64-libtheora
+          mingw-w64-x86_64-opus
+          mingw-w64-x86_64-opusfile
+          
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    - name: Add MSBuild to PATH
+      uses: microsoft/setup-msbuild@v1.0.2
+
+    - name: Build
+      working-directory: ${{env.GITHUB_WORKSPACE}}
+      run: |
+        make init
+        make
+      
+    - name: Upload
+      uses: actions/upload-artifact@v3
+      with:
+        name: DxLib.dll
+        path: |
+          DxLib*.dll
+          /mingw64/bin/libBulletCollision.dll
+          /mingw64/bin/libBulletDynamics.dll
+          /mingw64/bin/libjpeg*.dll
+          /mingw64/bin/libLinearMath.dll
+          /mingw64/bin/libogg*.dll
+          /mingw64/bin/libopus*.dll
+          /mingw64/bin/libopusfile*.dll
+          /mingw64/bin/libpng*.dll
+          /mingw64/bin/libtheora*.dll
+          /mingw64/bin/libtiff*.dll
+          /mingw64/bin/libvorbis*.dll
+          /mingw64/bin/libvorbisfile*.dll
+          /mingw64/bin/zlib*.dll
