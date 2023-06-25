@@ -127,45 +127,45 @@ libzstd.dll \
 zlib*.dll \
 	$(CXX) $(LDFLAGS) $^ -o $@
 
-libBulletCollision.dll: $(BIN)/$@
+libBulletCollision.dll: $(BIN)/libBulletCollision.dll
 	cp $^ .
-libBulletDynamics.dll: $(BIN)/$@
+libBulletDynamics.dll: $(BIN)/libBulletDynamics.dll
 	cp $^ .
-libdeflate.dll: $(BIN)/$@
+libdeflate.dll: $(BIN)/libdeflate.dll
 	cp $^ .
-libjbig*.dll: $(BIN)/$@
+libjbig*.dll: $(BIN)/libjbig*.dll
 	cp $^ .
-libjpeg*.dll: $(BIN)/$@
+libjpeg*.dll: $(BIN)/libjpeg*.dll
 	cp $^ .
-libLerc.dll: $(BIN)/$@
+libLerc.dll: $(BIN)/libLerc.dll
 	cp $^ .
-libLinearMath.dll: $(BIN)/$@
+libLinearMath.dll: $(BIN)/libLinearMath.dll
 	cp $^ .
-liblzma*.dll: $(BIN)/$@
+liblzma*.dll: $(BIN)/liblzma*.dll
 	cp $^ .
-libogg*.dll: $(BIN)/$@
+libogg*.dll: $(BIN)/libogg*.dll
 	cp $^ .
-libopus*.dll: $(BIN)/$@
+libopus*.dll: $(BIN)/libopus*.dll
 	cp $^ .
-libopusfile*.dll: $(BIN)/$@
+libopusfile*.dll: $(BIN)/libopusfile*.dll
 	cp $^ .
-libpng*.dll: $(BIN)/$@
+libpng*.dll: $(BIN)/libpng*.dll
 	cp $^ .
-libsharpyuv*.dll: $(BIN)/$@
+libsharpyuv*.dll: $(BIN)/libsharpyuv*.dll
 	cp $^ .
-libtheora*.dll: $(BIN)/$@
+libtheora*.dll: $(BIN)/libtheora*.dll
 	cp $^ .
-libtiff*.dll: $(BIN)/$@
+libtiff*.dll: $(BIN)/libtiff*.dll
 	cp $^ .
-libvorbis*.dll: $(BIN)/$@
+libvorbis*.dll: $(BIN)/libvorbis*.dll
 	cp $^ .
-libvorbisfile*.dll: $(BIN)/$@
+libvorbisfile*.dll: $(BIN)/libvorbisfile*.dll
 	cp $^ .
-libwebp*.dll: $(BIN)/$@
+libwebp*.dll: $(BIN)/libwebp*.dll
 	cp $^ .
-libzstd.dll: $(BIN)/$@
+libzstd.dll: $(BIN)/libzstd.dll
 	cp $^ .
-zlib*.dll: $(BIN)/$@
+zlib*.dll: $(BIN)/zlib*.dll
 	cp $^ .
 
 DxLibMake/DxArchive_.o: DxLibMake/DxArchive_.cpp
