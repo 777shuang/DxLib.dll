@@ -105,6 +105,11 @@ DxLibMake/DxMemImgDrawFunction1.o \
 DxLibMake/DxMemImgDrawFunction2.o \
 DxLibMake/DxMemImgDrawFunction3.o \
 \
+*.dll
+	$(CXX) $(LDFLAGS) $^ -o $@
+
+*.dll:
+cp \
 $(BIN)/libBulletCollision.dll \
 $(BIN)/libBulletDynamics.dll \
 $(BIN)/libjpeg*.dll \
@@ -117,9 +122,8 @@ $(BIN)/libtheora*.dll \
 $(BIN)/libtiff*.dll \
 $(BIN)/libvorbis*.dll \
 $(BIN)/libvorbisfile*.dll \
-$(BIN)/zlib*.dll
-
-	$(CXX) $(LDFLAGS) $^ -o $@
+$(BIN)/zlib*.dll \
+ .
 
 DxLibMake/DxArchive_.o: DxLibMake/DxArchive_.cpp
 	$(CXX) $(CXXFLAGS) $< -o $@
