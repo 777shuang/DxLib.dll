@@ -105,23 +105,68 @@ DxLibMake/DxMemImgDrawFunction1.o \
 DxLibMake/DxMemImgDrawFunction2.o \
 DxLibMake/DxMemImgDrawFunction3.o \
 \
-*.dll
+libBulletCollision.dll \
+libBulletDynamics.dll \
+libdeflate.dll \
+libjbig*.dll \
+libjpeg*.dll \
+libLerc.dll \
+libLinearMath.dll \
+liblzma*.dll \
+libogg*.dll \
+libopus*.dll \
+libopusfile*.dll \
+libpng*.dll \
+libsharpyuv*.dll \
+libtheora*.dll \
+libtiff*.dll \
+libvorbis*.dll \
+libvorbisfile*.dll \
+libwebp*.dll \
+libzstd.dll \
+zlib*.dll \
 	$(CXX) $(LDFLAGS) $^ -o $@
 
-*.dll:
-	cp $(BIN)/libBulletCollision.dll .
-	cp $(BIN)/libBulletDynamics.dll .
-	cp $(BIN)/libjpeg*.dll .
-	cp $(BIN)/libLinearMath.dll .
-	cp $(BIN)/libogg*.dll .
-	cp $(BIN)/libopus*.dll .
-	cp $(BIN)/libopusfile*.dll .
-	cp $(BIN)/libpng*.dll .
-	cp $(BIN)/libtheora*.dll .
-	cp $(BIN)/libtiff*.dll .
-	cp $(BIN)/libvorbis*.dll .
-	cp $(BIN)/libvorbisfile*.dll .
-	cp $(BIN)/zlib*.dll .
+libBulletCollision.dll: $(BIN)/$@
+	cp $^ .
+libBulletDynamics.dll: $(BIN)/$@
+	cp $^ .
+libdeflate.dll: $(BIN)/$@
+	cp $^ .
+libjbig*.dll: $(BIN)/$@
+	cp $^ .
+libjpeg*.dll: $(BIN)/$@
+	cp $^ .
+libLerc.dll: $(BIN)/$@
+	cp $^ .
+libLinearMath.dll: $(BIN)/$@
+	cp $^ .
+liblzma*.dll: $(BIN)/$@
+	cp $^ .
+libogg*.dll: $(BIN)/$@
+	cp $^ .
+libopus*.dll: $(BIN)/$@
+	cp $^ .
+libopusfile*.dll: $(BIN)/$@
+	cp $^ .
+libpng*.dll: $(BIN)/$@
+	cp $^ .
+libsharpyuv*.dll: $(BIN)/$@
+	cp $^ .
+libtheora*.dll: $(BIN)/$@
+	cp $^ .
+libtiff*.dll: $(BIN)/$@
+	cp $^ .
+libvorbis*.dll: $(BIN)/$@
+	cp $^ .
+libvorbisfile*.dll: $(BIN)/$@
+	cp $^ .
+libwebp*.dll: $(BIN)/$@
+	cp $^ .
+libzstd.dll: $(BIN)/$@
+	cp $^ .
+zlib*.dll: $(BIN)/$@
+	cp $^ .
 
 DxLibMake/DxArchive_.o: DxLibMake/DxArchive_.cpp
 	$(CXX) $(CXXFLAGS) $< -o $@
