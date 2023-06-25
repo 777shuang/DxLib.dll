@@ -1,3 +1,4 @@
+// 名前衝突回避のため、libBulletの関数やクラス名には先頭にD_がつけられているが、それを取り払う簡易ヘッダ
 #define D_btRigidBody btRigidBody
 #define D_btCollisionShape btCollisionShape
 #define D_btTransform btTransform
