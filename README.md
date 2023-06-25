@@ -17,10 +17,10 @@ MSYS2上で、DXライブラリのDLLを作成するためのスクリプトで�
 - `mingw-w64-x86_64-opusfile`
 
 ## ビルド方法
-`$ git clone https://github.com/777shuang/DxLib.dll --recursive`
-`$ cd DxLib.dll`
-`$ make init`
-`$ make`
+- `$ git clone https://github.com/777shuang/DxLib.dll --recursive`
+- `$ cd DxLib.dll`
+- `$ make init`
+- `$ make`
 
 ## ライセンス
 独自部分のみMIT Licenseが適用されます。test.cppはDXライブラリのサイトから拾ってきたものなので適用されません。
