@@ -1,0 +1,3 @@
+[submodule "dxlib-for-linux"]
+	path = dxlib-for-linux
+	url = https://github.com/dragoon2014/dxlib-for-linux
