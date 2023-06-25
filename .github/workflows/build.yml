@@ -59,18 +59,4 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: DxLib.dll
-        path: |
-          DxLib*.dll
-          /mingw64/bin/libBulletCollision.dll
-          /mingw64/bin/libBulletDynamics.dll
-          /mingw64/bin/libjpeg*.dll
-          /mingw64/bin/libLinearMath.dll
-          /mingw64/bin/libogg*.dll
-          /mingw64/bin/libopus*.dll
-          /mingw64/bin/libopusfile*.dll
-          /mingw64/bin/libpng*.dll
-          /mingw64/bin/libtheora*.dll
-          /mingw64/bin/libtiff*.dll
-          /mingw64/bin/libvorbis*.dll
-          /mingw64/bin/libvorbisfile*.dll
-          /mingw64/bin/zlib*.dll
+        path: *.dll
