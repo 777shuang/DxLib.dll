@@ -3,8 +3,8 @@ CXX=$(PREFIX)g++
 UNZIP=7z x
 CXXFLAGS= -s -Ofast -c -DDX_GCC_COMPILE -DDX_COMPILE_TYPE_C_LANGUAGE
 LDFLAGS= -s -Ofast -shared
-DXLIB_VERSION=3_24b
-DXLIB_URL=https://drive.google.com/uc?id=1-uDeu5NzyGsAh62jKd7VAf0IUZQmXhdU #https://dxlib.xsrv.jp/DxLib/DxLibMake$(DXLIB_VERSION).zip
+DXLIB_VERSION=3_24d
+DXLIB_URL=https://dxlib.xsrv.jp/DxLib/DxLibMake$(DXLIB_VERSION).zip
 BIN=/mingw64/bin
 
 DxLib-$(DXLIB_VERSION).dll: \
