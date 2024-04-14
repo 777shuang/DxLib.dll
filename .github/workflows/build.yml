@@ -55,4 +55,6 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: DxLib.dll
-        path: "*.dll"
+        path: |
+          "*.dll"
+          "DxLib.lib"
