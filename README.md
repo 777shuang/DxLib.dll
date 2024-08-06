@@ -26,4 +26,3 @@ git clone https://github.com/777shuang/DxLib.dll --recursive
 cd DxLib.dll
 make init
 ```
-```- `$ make`
