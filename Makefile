@@ -3,7 +3,7 @@ CXX=$(PREFIX)g++
 UNZIP=7z x
 CXXFLAGS= -s -Ofast -c -DDX_GCC_COMPILE -DDX_COMPILE_TYPE_C_LANGUAGE
 LDFLAGS= -s -Ofast -shared -Wl,--out-implib,DxLib.lib
-DXLIB_VERSION=3_24d
+DXLIB_VERSION=3_24f
 DXLIB_URL=https://dxlib.xsrv.jp/DxLib/DxLibMake$(DXLIB_VERSION).zip
 BIN=/mingw64/bin
 
