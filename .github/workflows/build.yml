@@ -2,62 +2,55 @@ name: Build
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "main", "development/**" ]
   pull_request:
     branches: [ "main" ]
 
 jobs:
   build:
-    runs-on: windows-latest
-
-    defaults:
-      run:
-        shell: msys2 {0}
+    runs-on: ubuntu-latest
+    env:
+      VCPKG_DEFAULT_TRIPLET: x64-mingw-dynamic
+      VCPKG_DEFAULT_HOST_TRIPLET: x64-linux
 
     steps:
-    - name: MSYS2 Setup
-      uses: msys2/setup-msys2@v2
-      with:
-        msystem: MINGW64
-        update: true
-        install: >-
-          make
-          wget
-          mingw-w64-x86_64-7zip
-          mingw-w64-x86_64-gcc
-          mingw-w64-x86_64-bullet
-          mingw-w64-x86_64-libpng
-          mingw-w64-x86_64-zlib
-          mingw-w64-x86_64-libjpeg-turbo
-          mingw-w64-x86_64-libtiff
-          mingw-w64-x86_64-libogg
-          mingw-w64-x86_64-libvorbis
-          mingw-w64-x86_64-libtheora
-          mingw-w64-x86_64-opus
-          mingw-w64-x86_64-opusfile
-
     - name: Checkout
       uses: actions/checkout@v4
       with:
         submodules: recursive
 
-    - name: Add MSBuild to PATH
-      uses: microsoft/setup-msbuild@v1.0.2
+    - name: Install xmake
+      uses: xmake-io/github-action-setup-xmake@v1
+      with:
+        xmake-version: latest
+
+    - name: Install MinGW-w64 cross compiler
+      run: |
+        sudo apt-get update
+        sudo apt-get install --yes g++-mingw-w64-x86-64
+
+    - name: Install vcpkg
+      run: |
+        git clone https://github.com/microsoft/vcpkg.git "$RUNNER_TEMP/vcpkg"
+        "$RUNNER_TEMP/vcpkg/bootstrap-vcpkg.sh" -disableMetrics
+        echo "$RUNNER_TEMP/vcpkg" >> "$GITHUB_PATH"
+        echo "VCPKG_ROOT=$RUNNER_TEMP/vcpkg" >> "$GITHUB_ENV"
 
     - name: Build
-      working-directory: ${{env.GITHUB_WORKSPACE}}
       run: |
-        make init
-        make
+        xmake f -p mingw -a x86_64 --mingw=/usr -c -y
+        xmake -y
 
-    - name: Upload DLL
+    - name: Upload DLLs
       uses: actions/upload-artifact@v4
       with:
         name: DxLib.dll
-        path: "*.dll"
+        path: build/*.dll
+        if-no-files-found: error
 
     - name: Upload Import Library
       uses: actions/upload-artifact@v4
       with:
         name: DxLib.lib
-        path: DxLib.lib
+        path: build/DxLib.lib
+        if-no-files-found: error

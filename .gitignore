@@ -36,3 +36,6 @@
 DxLib_GCC
 DxLibMake
 Log.txt
+.xmake/
+build/
+vcpkg_installed/
