@@ -20,9 +20,12 @@ jobs:
         submodules: recursive
 
     - name: Install xmake
-      uses: xmake-io/github-action-setup-xmake@v1
-      with:
-        xmake-version: latest
+      run: |
+        curl -fsSL https://xmake.io/shget.text | bash
+        source "$HOME/.xmake/profile"
+        command -v xmake
+        xmake --version
+        echo "$(dirname "$(command -v xmake)")" >> "$GITHUB_PATH"
 
     - name: Install MinGW-w64 cross compiler
       run: |

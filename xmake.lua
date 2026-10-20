@@ -1,5 +1,4 @@
 set_project("DxLib.dll")
-set_version("3_25a")
 set_defaultmode("release")
 set_plat("mingw")
 set_arch("x86_64")
