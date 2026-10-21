@@ -14,6 +14,10 @@ jobs:
       # Native Windows build tools can run as host tools; only the target
       # libraries need to use MinGW.
       VCPKG_DEFAULT_HOST_TRIPLET: x64-windows
+      # Keep vcpkg's downloads and compiled-package archives outside VCPKG_ROOT,
+      # because VCPKG_ROOT is freshly cloned on every hosted runner.
+      VCPKG_DOWNLOADS: ${{ github.workspace }}\\.cache\\vcpkg\\downloads
+      VCPKG_DEFAULT_BINARY_CACHE: ${{ github.workspace }}\\.cache\\vcpkg\\archives
 
     steps:
     - name: Checkout
@@ -25,6 +29,61 @@ jobs:
       uses: egor-tensin/setup-mingw@v3
       with:
         platform: x64
+
+    - name: Determine MinGW compiler version
+      id: mingw
+      shell: pwsh
+      run: |
+        $compiler = Get-Command "x86_64-w64-mingw32-g++.exe" -ErrorAction Stop
+        $version = (& $compiler.Source -dumpfullversion -dumpversion | Select-Object -First 1).Trim()
+        if ($LASTEXITCODE -ne 0 -or [string]::IsNullOrWhiteSpace($version)) {
+          throw "Unable to determine the MinGW compiler version."
+        }
+        "version=$version" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+
+    - name: Determine DxLib source version
+      id: dxlib-version
+      shell: pwsh
+      run: |
+        $content = Get-Content "xmake.lua" -Raw
+        $match = [regex]::Match($content, 'local dxlib_version\s*=\s*"([^"]+)"')
+        if (-not $match.Success) {
+          throw "Could not find local dxlib_version in xmake.lua."
+        }
+        "version=$($match.Groups[1].Value)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+
+    - name: Prepare cache directories
+      shell: pwsh
+      run: |
+        New-Item -ItemType Directory -Force -Path $env:VCPKG_DOWNLOADS, $env:VCPKG_DEFAULT_BINARY_CACHE | Out-Null
+
+    - name: Restore vcpkg source-download cache
+      id: cache-vcpkg-downloads
+      uses: actions/cache/restore@v4
+      with:
+        path: ${{ env.VCPKG_DOWNLOADS }}
+        key: ${{ runner.os }}-vcpkg-downloads-${{ hashFiles('vcpkg.json') }}
+        restore-keys: |
+          ${{ runner.os }}-vcpkg-downloads-
+
+    - name: Restore vcpkg binary cache
+      id: cache-vcpkg-binary
+      uses: actions/cache/restore@v4
+      with:
+        path: ${{ env.VCPKG_DEFAULT_BINARY_CACHE }}
+        key: ${{ runner.os }}-vcpkg-binary-${{ env.VCPKG_DEFAULT_TRIPLET }}-${{ env.VCPKG_DEFAULT_HOST_TRIPLET }}-gcc-${{ steps.mingw.outputs.version }}-${{ hashFiles('vcpkg.json', 'xmake.lua') }}
+        restore-keys: |
+          ${{ runner.os }}-vcpkg-binary-${{ env.VCPKG_DEFAULT_TRIPLET }}-${{ env.VCPKG_DEFAULT_HOST_TRIPLET }}-
+
+    - name: Restore DxLib source cache
+      id: cache-dxlib-sources
+      uses: actions/cache/restore@v4
+      with:
+        path: |
+          DxLibMake.zip
+          DxLibMake/
+        # No restore-keys here: never reuse source files from another DxLib version.
+        key: ${{ runner.os }}-dxlib-source-${{ steps.dxlib-version.outputs.version }}
 
     - name: Install xmake
       uses: xmake-io/github-action-setup-xmake@v1
@@ -50,6 +109,15 @@ jobs:
         if ($LASTEXITCODE -ne 0) {
           exit $LASTEXITCODE
         }
+
+    - name: Save DxLib source cache
+      if: success() && steps.cache-dxlib-sources.outputs.cache-hit != 'true'
+      uses: actions/cache/save@v4
+      with:
+        path: |
+          DxLibMake.zip
+          DxLibMake/
+        key: ${{ runner.os }}-dxlib-source-${{ steps.dxlib-version.outputs.version }}
 
     - name: Build
       shell: pwsh
@@ -78,6 +146,32 @@ jobs:
         if ($LASTEXITCODE -ne 0) {
           exit $LASTEXITCODE
         }
+
+    - name: Check vcpkg cache contents
+      id: vcpkg-cache-state
+      if: always()
+      shell: pwsh
+      run: |
+        $downloadFile = Get-ChildItem -LiteralPath $env:VCPKG_DOWNLOADS -File -Recurse -ErrorAction SilentlyContinue | Select-Object -First 1
+        $binaryFile = Get-ChildItem -LiteralPath $env:VCPKG_DEFAULT_BINARY_CACHE -File -Recurse -ErrorAction SilentlyContinue | Select-Object -First 1
+        $hasDownloads = if ($null -ne $downloadFile) { "true" } else { "false" }
+        $hasBinaries = if ($null -ne $binaryFile) { "true" } else { "false" }
+        "has-downloads=$hasDownloads" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+        "has-binaries=$hasBinaries" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+
+    - name: Save vcpkg source-download cache
+      if: always() && steps.vcpkg-cache-state.outputs.has-downloads == 'true' && steps.cache-vcpkg-downloads.outputs.cache-hit != 'true'
+      uses: actions/cache/save@v4
+      with:
+        path: ${{ env.VCPKG_DOWNLOADS }}
+        key: ${{ runner.os }}-vcpkg-downloads-${{ hashFiles('vcpkg.json') }}
+
+    - name: Save vcpkg binary cache
+      if: always() && steps.vcpkg-cache-state.outputs.has-binaries == 'true' && steps.cache-vcpkg-binary.outputs.cache-hit != 'true'
+      uses: actions/cache/save@v4
+      with:
+        path: ${{ env.VCPKG_DEFAULT_BINARY_CACHE }}
+        key: ${{ runner.os }}-vcpkg-binary-${{ env.VCPKG_DEFAULT_TRIPLET }}-${{ env.VCPKG_DEFAULT_HOST_TRIPLET }}-gcc-${{ steps.mingw.outputs.version }}-${{ hashFiles('vcpkg.json', 'xmake.lua') }}
 
     - name: Upload DLLs
       uses: actions/upload-artifact@v4
