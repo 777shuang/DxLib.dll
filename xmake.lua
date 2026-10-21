@@ -168,14 +168,14 @@ target("DxLib")
     set_optimize("fastest")
     add_cxxflags("-Ofast", {force = true})
     add_shflags("-s", {force = true})
-    add_shflags("-Wl,--out-implib,build/DxLib.lib", {force = true})
+    add_shflags("-Wl,--out-implib," .. path.join(project_dir, "build", "DxLib.lib"), {force = true})
 
     for _, source in ipairs(sources) do
         add_files(source)
     end
 
     -- The legacy Bullet wrapper uses aliases declared by this project.
-    add_cxxflags("-include D_.h", {
+    add_cxxflags("-include " .. path.join(project_dir, "D_.h"), {
         source = "DxLibMake/DxUseCLibPhysics.cpp",
         force = true
     })
