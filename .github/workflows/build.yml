@@ -39,6 +39,9 @@ jobs:
         echo "$RUNNER_TEMP/vcpkg" >> "$GITHUB_PATH"
         echo "VCPKG_ROOT=$RUNNER_TEMP/vcpkg" >> "$GITHUB_ENV"
 
+    - name: Download DxLib sources
+      run: xmake download-dxlib
+
     - name: Build
       run: |
         xmake f -p mingw -a x86_64 --mingw=/usr -c -y

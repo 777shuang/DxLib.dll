@@ -11,13 +11,30 @@ local dxlib_url = "https://dxlib.xsrv.jp/DxLib/DxLibMake" .. dxlib_version .. ".
 local vcpkg_baseline = "31b2524e58e7a0344552ade30b213a15734f944d"
 local vcpkg_triplet = os.getenv("VCPKG_DEFAULT_TRIPLET") or "x64-mingw-dynamic"
 
--- Fetch the upstream DxLib sources when they are not present.
-if not os.isfile(path.join(dxlib_source_dir, "DxArchive_.cpp")) then
-    import("net.http")
-    import("utils.archive")
-    http.download(dxlib_url, dxlib_archive)
-    archive.extract(dxlib_archive, project_dir)
-end
+-- Download sources explicitly as an xmake task. Module imports are only
+-- valid in script callbacks, not at the top level of the project description.
+task("download-dxlib")
+    set_menu {
+        usage = "xmake download-dxlib",
+        description = "Download and extract the official DxLibMake sources"
+    }
+    on_run(function ()
+        if os.isfile(path.join(dxlib_source_dir, "DxArchive_.cpp")) then
+            print("DxLibMake sources already exist; skipping download.")
+            return
+        end
+
+        import("net.http")
+        import("utils.archive")
+        http.download(dxlib_url, dxlib_archive)
+        archive.extract(dxlib_archive, project_dir)
+
+        if not os.isfile(path.join(dxlib_source_dir, "DxArchive_.cpp")) then
+            raise("DxLibMake archive was downloaded but the expected source file was not found.")
+        end
+        print("DxLibMake sources are ready.")
+    end)
+task_end()
 
 -- xmake installs and integrates these dependencies through vcpkg.
 local vcpkg_packages = {
