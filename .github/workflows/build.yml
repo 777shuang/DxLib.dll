@@ -8,10 +8,12 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     env:
       VCPKG_DEFAULT_TRIPLET: x64-mingw-dynamic
-      VCPKG_DEFAULT_HOST_TRIPLET: x64-linux
+      # Native Windows build tools can run as host tools; only the target
+      # libraries need to use MinGW.
+      VCPKG_DEFAULT_HOST_TRIPLET: x64-windows
 
     steps:
     - name: Checkout
@@ -19,33 +21,62 @@ jobs:
       with:
         submodules: recursive
 
-    - name: Install xmake
-      run: |
-        curl -fsSL https://xmake.io/shget.text | bash
-        source "$HOME/.xmake/profile"
-        command -v xmake
-        xmake --version
-        echo "$(dirname "$(command -v xmake)")" >> "$GITHUB_PATH"
+    - name: Set up MinGW-w64
+      uses: egor-tensin/setup-mingw@v3
+      with:
+        platform: x64
 
-    - name: Install MinGW-w64 cross compiler
-      run: |
-        sudo apt-get update
-        sudo apt-get install --yes g++-mingw-w64-x86-64
+    - name: Install xmake
+      uses: xmake-io/github-action-setup-xmake@v1
+      with:
+        xmake-version: latest
 
     - name: Install vcpkg
+      shell: pwsh
       run: |
-        git clone https://github.com/microsoft/vcpkg.git "$RUNNER_TEMP/vcpkg"
-        "$RUNNER_TEMP/vcpkg/bootstrap-vcpkg.sh" -disableMetrics
-        echo "$RUNNER_TEMP/vcpkg" >> "$GITHUB_PATH"
-        echo "VCPKG_ROOT=$RUNNER_TEMP/vcpkg" >> "$GITHUB_ENV"
+        $vcpkgRoot = Join-Path $env:RUNNER_TEMP "vcpkg"
+        git clone https://github.com/microsoft/vcpkg.git $vcpkgRoot
+        & (Join-Path $vcpkgRoot "bootstrap-vcpkg.bat") -disableMetrics
+        if ($LASTEXITCODE -ne 0) {
+          exit $LASTEXITCODE
+        }
+        "VCPKG_ROOT=$vcpkgRoot" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+        $vcpkgRoot | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
 
     - name: Download DxLib sources
-      run: xmake download-dxlib
+      shell: pwsh
+      run: |
+        xmake download-dxlib
+        if ($LASTEXITCODE -ne 0) {
+          exit $LASTEXITCODE
+        }
 
     - name: Build
+      shell: pwsh
       run: |
-        xmake f -p mingw -a x86_64 --mingw=/usr -c -y
+        $compiler = Get-Command "x86_64-w64-mingw32-g++.exe" -ErrorAction Stop
+        $mingwBin = Split-Path $compiler.Source -Parent
+        $mingwRoot = Split-Path $mingwBin -Parent
+
+        # Avoid accidentally picking Unix utilities bundled with Git or other
+        # software during native Windows/vcpkg builds.
+        $cleanPath = ($env:PATH -split ';' | Where-Object {
+          $_ -and
+          (Test-Path (Join-Path $_ "sh.exe")) -eq $false -and
+          (Test-Path (Join-Path $_ "bash.exe")) -eq $false -and
+          (Test-Path (Join-Path $_ "msys-2.0.dll")) -eq $false -and
+          (Test-Path (Join-Path $_ "cygwin1.dll")) -eq $false
+        }) -join ';'
+        $env:PATH = "$mingwBin;$cleanPath"
+
+        xmake f -p mingw -a x86_64 "--mingw=$mingwRoot" -c -y
+        if ($LASTEXITCODE -ne 0) {
+          exit $LASTEXITCODE
+        }
         xmake -y
+        if ($LASTEXITCODE -ne 0) {
+          exit $LASTEXITCODE
+        }
 
     - name: Upload DLLs
       uses: actions/upload-artifact@v4
