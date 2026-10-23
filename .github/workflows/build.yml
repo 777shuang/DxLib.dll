@@ -47,7 +47,9 @@ jobs:
       uses: xmake-io/github-action-setup-xmake@v1
       with:
         xmake-version: latest
-        package-cache: true
+        # Disable the action's package-key calculation, which is currently failing.
+        # Configure dependency caching separately after the workflow is stable.
+        package-cache: false
         project-path: .
 
     - name: Download DxLib sources
