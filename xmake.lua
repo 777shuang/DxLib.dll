@@ -3,6 +3,9 @@ set_defaultmode("release")
 set_plat("mingw")
 set_arch("x86_64")
 
+-- Keep xmake-resolved package versions reproducible.
+set_policy("package.requires_lock", true)
+
 local project_dir = os.scriptdir()
 local dxlib_version = "3_25a"
 local dxlib_source_dir = path.join(project_dir, "DxLibMake")
@@ -57,7 +60,16 @@ local vcpkg_packages = {
 }
 
 for _, package in ipairs(vcpkg_packages) do
-    add_requires(package, {configs = {baseline = vcpkg_baseline}})
+    if package == "vcpkg::tiff" then
+        add_requires(package, {
+            configs = {
+                baseline = vcpkg_baseline,
+                features = {"lerc", "libdeflate", "webp", "zstd"}
+            }
+        })
+    else
+        add_requires(package, {configs = {baseline = vcpkg_baseline}})
+    end
 end
 
 local sources = {

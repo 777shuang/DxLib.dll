@@ -39,6 +39,9 @@ source "$HOME/.xmake/profile"
 git clone https://github.com/777shuang/DxLib.dll.git --recursive
 cd DxLib.dll
 git clone https://github.com/microsoft/vcpkg.git "$HOME/vcpkg"
+VCPKG_BASELINE="$(sed -n 's/^local vcpkg_baseline = "\([0-9a-f]\{40\}\)".*/\1/p' xmake.lua)"
+test -n "$VCPKG_BASELINE"
+git -C "$HOME/vcpkg" checkout --detach "$VCPKG_BASELINE"
 "$HOME/vcpkg/bootstrap-vcpkg.sh" -disableMetrics
 export VCPKG_ROOT="$HOME/vcpkg"
 export PATH="$VCPKG_ROOT:$PATH"
@@ -49,10 +52,10 @@ xmake f -p mingw -a x86_64 --mingw=/usr
 xmake
 ```
 
-xmake が DxLibMake のソース ZIP を取得・展開し、vcpkg 経由で必要なライブラリを取得してリンクします。DLL と import library は build/ に出力され、依存 DLL も同じディレクトリにコピーされます。
+依存ライブラリの宣言と vcpkg の固定リビジョンは xmake.lua に集約しています（プロジェクト直下の vcpkg.json は不要です）。xmake が DxLibMake のソース ZIP を取得・展開し、xmake.lua で指定した vcpkg リビジョンから必要なライブラリを取得してリンクします。DLL と import library は build/ に出力され、依存 DLL も同じディレクトリにコピーされます。
 
 `x64-mingw-dynamic` は vcpkg の community triplet です。vcpkg 側で一部 port が未検証のため、将来の port 更新によりビルドエラーが発生する可能性があります。Windows ネイティブ環境での同 triplet の動作はこの構成では保証していません。MSYS2 を別途インストールせずにビルドしたい場合は、Ubuntu/WSL2 または GitHub Actions を利用してください。
 
 ## GitHub Actions
 
-GitHub Actions は Ubuntu 上で MinGW-w64 クロスコンパイルを実行します。MSYS2 のセットアップや pacman は使用せず、xmake が vcpkg から依存関係を取得します。
+GitHub Actions は Windows runner 上で MinGW-w64 を使用してビルドします。MSYS2 のセットアップや pacman は使用せず、xmake.lua の依存関係定義に基づき vcpkg からライブラリを取得します。依存パッケージのキャッシュ復元・保存には setup-xmake アクションの package-cache 機能を使用します。
