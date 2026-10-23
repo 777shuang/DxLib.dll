@@ -65,7 +65,7 @@ jobs:
         path: |
           DxLibMake.zip
           DxLibMake/
-        key: ${{ runner.os }}-dxlib-source-${{ steps.dxlib-version.outputs.version }}
+        key: ${{ runner.os }}-dxlib-${{ env.DXLIB_VERSION }}
 
     - name: Build
       shell: pwsh
