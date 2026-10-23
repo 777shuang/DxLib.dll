@@ -7,7 +7,7 @@ set_arch("x86_64")
 set_policy("package.requires_lock", true)
 
 local project_dir = os.scriptdir()
-local dxlib_version = "3_25a"
+local dxlib_version_contents = io.readfile("dxlib-version.txt")
 local dxlib_source_dir = path.join(project_dir, "DxLibMake")
 local dxlib_archive = path.join(project_dir, "DxLibMake.zip")
 local dxlib_url = "https://dxlib.xsrv.jp/DxLib/DxLibMake" .. dxlib_version .. ".zip"
@@ -63,7 +63,7 @@ for _, package in ipairs(vcpkg_packages) do
     if package == "vcpkg::tiff" then
         add_requires(package, {
             configs = {
-                baseline = vcpkg_baseline,
+                --baseline = vcpkg_baseline,
                 features = {"lerc", "libdeflate", "webp", "zstd"}
             }
         })
