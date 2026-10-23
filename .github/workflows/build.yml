@@ -32,9 +32,6 @@ jobs:
         xmake-version: latest
         project-path: .
 
-    - name: Install required packages
-      run: xmake require -y
-
     - name: Determine DxLib source version
       id: dxlib-version
       shell: pwsh
