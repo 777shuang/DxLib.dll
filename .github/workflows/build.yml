@@ -26,25 +26,6 @@ jobs:
       with:
         platform: x64
 
-    - name: Determine MinGW compiler version
-      id: mingw
-      shell: pwsh
-      run: |
-        $compiler = Get-Command "x86_64-w64-mingw32-g++" -ErrorAction SilentlyContinue
-        if ($null -ne $compiler) {
-          $compilerPath = $compiler.Source
-        } else {
-          $compilerPath = "C:\ProgramData\mingw64\mingw64\bin\x86_64-w64-mingw32-g++.exe"
-          if (-not (Test-Path $compilerPath)) {
-            throw "Could not locate x86_64-w64-mingw32-g++."
-          }
-        }
-        $version = (& $compilerPath -dumpfullversion -dumpversion | Select-Object -First 1).Trim()
-        if ($LASTEXITCODE -ne 0 -or [string]::IsNullOrWhiteSpace($version)) {
-          throw "Unable to determine the MinGW compiler version."
-        }
-        "version=$version" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
-
     - name: Determine DxLib source version
       id: dxlib-version
       shell: pwsh
@@ -56,17 +37,6 @@ jobs:
         }
         "version=$($match.Groups[1].Value)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
 
-    - name: Determine vcpkg baseline
-      id: vcpkg-baseline
-      shell: pwsh
-      run: |
-        $content = Get-Content "xmake.lua" -Raw
-        $match = [regex]::Match($content, 'local vcpkg_baseline\s*=\s*"([0-9a-f]{40})"')
-        if (-not $match.Success) {
-          throw "Could not find a 40-character vcpkg_baseline in xmake.lua."
-        }
-        "commit=$($match.Groups[1].Value)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
-
     - name: Restore DxLib source cache
       id: cache-dxlib-sources
       uses: actions/cache/restore@v4
@@ -76,14 +46,6 @@ jobs:
           DxLibMake/
         # No restore-keys here: never reuse source files from another DxLib version.
         key: ${{ runner.os }}-dxlib-source-${{ steps.dxlib-version.outputs.version }}
-
-    - name: Install xmake and restore package cache
-      uses: xmake-io/github-action-setup-xmake@v1
-      with:
-        xmake-version: latest
-        package-cache: true
-        project-path: .
-        package-cache-key: ${{ runner.os }}-${{ env.VCPKG_DEFAULT_TRIPLET }}-${{ env.VCPKG_DEFAULT_HOST_TRIPLET }}-mingw-${{ steps.mingw.outputs.version }}-vcpkg-${{ steps.vcpkg-baseline.outputs.commit }}
 
     - name: Install vcpkg
       env:
@@ -105,6 +67,13 @@ jobs:
         }
         "VCPKG_ROOT=$vcpkgRoot" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
         $vcpkgRoot | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+
+    - name: Install xmake and restore package cache
+      uses: xmake-io/github-action-setup-xmake@v1
+      with:
+        xmake-version: latest
+        package-cache: true
+        project-path: .
 
     - name: Download DxLib sources
       shell: pwsh
