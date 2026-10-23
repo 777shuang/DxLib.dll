@@ -7,15 +7,8 @@ set_arch("x86_64")
 set_policy("package.requires_lock", true)
 
 local project_dir = os.scriptdir()
--- The xmake description environment does not expose Lua's io module.
--- CI and local build instructions set this value from dxlib-version.txt.
-local dxlib_version = os.getenv("DXLIB_VERSION")
-assert(dxlib_version and dxlib_version ~= "",
-    "DXLIB_VERSION is required; set it from dxlib-version.txt before running xmake.")
-dxlib_version = dxlib_version:gsub("%s+", "")
 local dxlib_source_dir = path.join(project_dir, "DxLibMake")
 local dxlib_archive = path.join(project_dir, "DxLibMake.zip")
-local dxlib_url = "https://dxlib.xsrv.jp/DxLib/DxLibMake" .. dxlib_version .. ".zip"
 local vcpkg_baseline = "31b2524e58e7a0344552ade30b213a15734f944d"
 local vcpkg_triplet = os.getenv("VCPKG_DEFAULT_TRIPLET") or "x64-mingw-dynamic"
 
@@ -31,6 +24,17 @@ task("download-dxlib")
             print("DxLibMake sources already exist; skipping download.")
             return
         end
+
+        local version_file = path.join(project_dir, "dxlib-version.txt")
+        local version_text = io.readfile(version_file)
+        if not version_text then
+            raise("Could not read DxLib version file: " .. version_file)
+        end
+        local dxlib_version = string.trim(version_text)
+        if dxlib_version == "" then
+            raise("DxLib version file is empty: " .. version_file)
+        end
+        local dxlib_url = "https://dxlib.xsrv.jp/DxLib/DxLibMake" .. dxlib_version .. ".zip"
 
         import("net.http")
         import("utils.archive")
@@ -177,7 +181,19 @@ local sources = {
 target("DxLib")
     set_kind("shared")
     set_prefixname("")
-    set_basename("DxLib-" .. dxlib_version)
+    on_load(function (target)
+        -- File I/O is available in script callbacks, not in the description scope.
+        local version_file = path.join(project_dir, "dxlib-version.txt")
+        local version_text = io.readfile(version_file)
+        if not version_text then
+            raise("Could not read DxLib version file: " .. version_file)
+        end
+        local dxlib_version = string.trim(version_text)
+        if dxlib_version == "" then
+            raise("DxLib version file is empty: " .. version_file)
+        end
+        target:set("basename", "DxLib-" .. dxlib_version)
+    end)
     set_targetdir(path.join(project_dir, "build"))
     add_defines("DX_GCC_COMPILE", "DX_COMPILE_TYPE_C_LANGUAGE")
     add_includedirs(path.join(project_dir, "dxlib-for-linux", "insufficient_include"))
