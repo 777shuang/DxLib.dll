@@ -47,6 +47,8 @@ export VCPKG_ROOT="$HOME/vcpkg"
 export PATH="$VCPKG_ROOT:$PATH"
 export VCPKG_DEFAULT_TRIPLET=x64-mingw-dynamic
 export VCPKG_DEFAULT_HOST_TRIPLET=x64-linux
+export DXLIB_VERSION="$(tr -d '[:space:]' < dxlib-version.txt)"
+test -n "$DXLIB_VERSION"
 xmake download-dxlib
 xmake f -p mingw -a x86_64 --mingw=/usr
 xmake
