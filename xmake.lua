@@ -7,7 +7,7 @@ set_arch("x86_64")
 set_policy("package.requires_lock", true)
 
 local project_dir = os.scriptdir()
-local dxlib_version = io.readfile("dxlib-version.txt")
+local dxlib_version = string.trim(io.readfile("dxlib-version.txt"))
 local dxlib_source_dir = path.join(project_dir, "DxLibMake")
 local dxlib_archive = path.join(project_dir, "DxLibMake.zip")
 local dxlib_url = "https://dxlib.xsrv.jp/DxLib/DxLibMake" .. dxlib_version .. ".zip"
