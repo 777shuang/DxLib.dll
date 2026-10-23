@@ -54,7 +54,7 @@ jobs:
       run: |
         # Explicitly bind xmake to this checkout so a cached or inherited project
         # directory cannot hide the custom task declared in the local xmake.lua.
-        xmake download-dxlib -y
+        xmake download-dxlib
         if ($LASTEXITCODE -ne 0) {
           exit $LASTEXITCODE
         }
