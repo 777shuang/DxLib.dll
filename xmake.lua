@@ -72,7 +72,7 @@ for _, package in ipairs(vcpkg_packages) do
     if package == "vcpkg::tiff" then
         add_requires(package, {
             configs = {
-                --baseline = vcpkg_baseline,
+                baseline = vcpkg_baseline,
                 features = {"lerc", "libdeflate", "webp", "zstd"}
             }
         })
