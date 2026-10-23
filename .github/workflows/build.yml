@@ -30,12 +30,8 @@ jobs:
       id: dxlib-version
       shell: pwsh
       run: |
-        $content = Get-Content "xmake.lua" -Raw
-        $match = [regex]::Match($content, 'local dxlib_version\s*=\s*"([^"]+)"')
-        if (-not $match.Success) {
-          throw "Could not find local dxlib_version in xmake.lua."
-        }
-        "version=$($match.Groups[1].Value)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+        $content = Get-Content -Path "dxlib-version.txt" -Raw
+        "DXLIB_VERSION=$content" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
 
     - name: Restore DxLib source cache
       id: cache-dxlib-sources
@@ -45,7 +41,7 @@ jobs:
           DxLibMake.zip
           DxLibMake/
         # No restore-keys here: never reuse source files from another DxLib version.
-        key: ${{ runner.os }}-dxlib-source-${{ steps.dxlib-version.outputs.version }}
+        key: ${{ runner.os }}-dxlib-${{ env.DXLIB_VERSION }}
 
     - name: Install xmake and restore package cache
       uses: xmake-io/github-action-setup-xmake@v1
