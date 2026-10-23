@@ -7,7 +7,12 @@ set_arch("x86_64")
 set_policy("package.requires_lock", true)
 
 local project_dir = os.scriptdir()
-local dxlib_version = string.trim(io.readfile("dxlib-version.txt"))
+-- The xmake description environment does not expose Lua's io module.
+-- CI and local build instructions set this value from dxlib-version.txt.
+local dxlib_version = os.getenv("DXLIB_VERSION")
+assert(dxlib_version and dxlib_version ~= "",
+    "DXLIB_VERSION is required; set it from dxlib-version.txt before running xmake.")
+dxlib_version = dxlib_version:gsub("%s+", "")
 local dxlib_source_dir = path.join(project_dir, "DxLibMake")
 local dxlib_archive = path.join(project_dir, "DxLibMake.zip")
 local dxlib_url = "https://dxlib.xsrv.jp/DxLib/DxLibMake" .. dxlib_version .. ".zip"
