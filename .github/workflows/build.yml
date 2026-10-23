@@ -99,7 +99,7 @@ jobs:
           exit $LASTEXITCODE
         }
         # Limit compiler concurrency on hosted Windows runners and retain detailed diagnostics.
-        xmake -v -j2 -y
+        xmake -y
         if ($LASTEXITCODE -ne 0) {
           exit $LASTEXITCODE
         }
