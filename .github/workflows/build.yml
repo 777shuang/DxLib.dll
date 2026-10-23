@@ -26,14 +26,20 @@ jobs:
       with:
         platform: x64
 
+    - name: setup xmake
+      uses: xmake-io/github-action-setup-xmake@v1
+      with:
+        xmake-version: latest
+        project-path: .
+
+    - name: Install required packages
+      run: xmake require
+
     - name: Determine DxLib source version
       id: dxlib-version
       shell: pwsh
       run: |
-        $content = (Get-Content -Path "dxlib-version.txt" -Raw).Trim()
-        if ([string]::IsNullOrWhiteSpace($content)) {
-          throw "dxlib-version.txt is empty."
-        }
+        $content = (Get-Content -Path "dxlib-version.txt" -Raw)
         "version=$content" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
 
     - name: Restore DxLib source cache
@@ -45,15 +51,6 @@ jobs:
           DxLibMake/
         # No restore-keys here: never reuse source files from another DxLib version.
         key: ${{ runner.os }}-dxlib-${{ steps.dxlib-version.outputs.version }}
-
-    - name: Install xmake and restore package cache
-      uses: xmake-io/github-action-setup-xmake@v1
-      with:
-        xmake-version: latest
-        # Disable the action's package-key calculation, which is currently failing.
-        # Configure dependency caching separately after the workflow is stable.
-        package-cache: false
-        project-path: .
 
     - name: Download DxLib sources
       shell: pwsh
