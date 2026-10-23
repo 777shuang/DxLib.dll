@@ -47,27 +47,6 @@ jobs:
         # No restore-keys here: never reuse source files from another DxLib version.
         key: ${{ runner.os }}-dxlib-source-${{ steps.dxlib-version.outputs.version }}
 
-    - name: Install vcpkg
-      env:
-        VCPKG_COMMIT: ${{ steps.vcpkg-baseline.outputs.commit }}
-      shell: pwsh
-      run: |
-        $vcpkgRoot = Join-Path $env:RUNNER_TEMP "vcpkg"
-        git clone https://github.com/microsoft/vcpkg.git $vcpkgRoot
-        if ($LASTEXITCODE -ne 0) {
-          exit $LASTEXITCODE
-        }
-        git -C $vcpkgRoot checkout --detach $env:VCPKG_COMMIT
-        if ($LASTEXITCODE -ne 0) {
-          exit $LASTEXITCODE
-        }
-        & (Join-Path $vcpkgRoot "bootstrap-vcpkg.bat") -disableMetrics
-        if ($LASTEXITCODE -ne 0) {
-          exit $LASTEXITCODE
-        }
-        "VCPKG_ROOT=$vcpkgRoot" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-        $vcpkgRoot | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
-
     - name: Install xmake and restore package cache
       uses: xmake-io/github-action-setup-xmake@v1
       with:
