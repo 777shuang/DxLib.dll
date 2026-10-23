@@ -33,7 +33,7 @@ jobs:
         project-path: .
 
     - name: Install required packages
-      run: xmake require
+      run: xmake require -y
 
     - name: Determine DxLib source version
       id: dxlib-version
